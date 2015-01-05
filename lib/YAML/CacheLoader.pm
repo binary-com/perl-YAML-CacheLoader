@@ -5,7 +5,7 @@ use warnings;
 package YAML::CacheLoader;
 
 use base qw( Exporter );
-our @EXPORT_OK = qw( LoadFile DumpFile );
+our @EXPORT_OK = qw( LoadFile DumpFile FlushCache );
 
 use constant CACHE_SECONDS   => 593;                   # Relatively nice prime number just under 10 minutes.
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
@@ -44,6 +44,15 @@ sub DumpFile {
     }
 
     return $structure;
+}
+
+sub FlushCache {
+
+    my $redis = Cache::RedisDB;
+    # Here we rely on a little bit of implementation knowledge about Cache::RedisDB
+    my @cache_keys = @{$redis->keys(CACHE_NAMESPACE . '*')};    # Hopefully nobody is using a longer version
+
+    return @cache_keys ? $redis->del(@cache_keys) : 0;
 }
 
 1;
