@@ -5,7 +5,7 @@ use warnings;
 package YAML::CacheLoader;
 
 use base qw( Exporter );
-our @EXPORT_OK = qw( LoadFile );
+our @EXPORT_OK = qw( LoadFile DumpFile );
 
 use constant CACHE_SECONDS   => 593;                   # Relatively nice prime number just under 10 minutes.
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
@@ -13,7 +13,7 @@ use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied 
 use Cache::RedisDB;
 use Path::Tiny;
 use Sereal qw( encode_sereal decode_sereal looks_like_sereal );
-use YAML qw( LoadFile );
+use YAML ( );
 
 sub LoadFile {
     my ($path, $force_reload) = @_;
@@ -26,9 +26,22 @@ sub LoadFile {
     }
 
     # Looks like we'll need to actually do some work, then.
-    my $structure = LoadFile($file_loc);                                                          # Let this fail in whatever ways it might.
+    my $structure = YAML::LoadFile($file_loc);                                                          # Let this fail in whatever ways it might.
 
     Cache::RedisDB->set(CACHE_NAMESPACE, $file_loc, encode_sereal($structure), CACHE_SECONDS) if ($structure);
+
+    return $structure;
+}
+
+sub DumpFile {
+    my ($path, $structure) = @_;
+
+    my $file_loc = path($path)->canonpath;    # realpath would be more accurate, but slower.
+
+    if ($structure) {
+        YAML::DumpFile($file_loc, $structure);
+        Cache::RedisDB->set(CACHE_NAMESPACE, $file_loc, encode_sereal($structure), CACHE_SECONDS);
+    }
 
     return $structure;
 }
