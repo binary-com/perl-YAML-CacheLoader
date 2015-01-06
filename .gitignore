@@ -6,6 +6,7 @@
 .#*
 *.lock
 *.appcache
+.build/
 api/api_server.log
 cover_db
 .sass-cache

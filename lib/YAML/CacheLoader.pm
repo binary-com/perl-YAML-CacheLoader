@@ -48,7 +48,7 @@ sub DumpFile {
 
 sub FlushCache {
 
-    my $redis = Cache::RedisDB;
+    my $redis = Cache::RedisDB->redis;
     # Here we rely on a little bit of implementation knowledge about Cache::RedisDB
     my @cache_keys = @{$redis->keys(CACHE_NAMESPACE . '*')};    # Hopefully nobody is using a longer version
 
