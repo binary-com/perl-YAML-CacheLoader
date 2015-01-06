@@ -20,7 +20,7 @@ my $test_structure = {
     akey => 'cache-loader',
     bkey => ['testing', 'is', 'good']};
 
-subtest 'DumpFile' => sub {
+subtest 'DumpFile / LoadFile ' => sub {
 
     my $temp_file = Path::Tiny->tempfile('loaderXXXXXXX');
     my $contents  = $temp_file->slurp;
@@ -31,6 +31,13 @@ subtest 'DumpFile' => sub {
     my $structure;
     lives_ok { $structure = YAML::Load($contents) } ' which loads as YAML';
     eq_or_diff($structure, $test_structure, ' and parses just as expected');
+    lives_ok { $structure = LoadFile($temp_file) } $temp_file . ' loads properly via CacheLoader';
+    eq_or_diff($structure, $test_structure, ' and parses just as expected');
+    my $filename = $temp_file->canonpath;
+    undef $temp_file;
+    ok(not(-e $filename), $filename . ' no longer exists.');
+    throws_ok { $structure = YAML::LoadFile($filename) }  qr/Couldn't open/, ' which means YAML cannot open it';
+    lives_ok { $structure = LoadFile($filename) } 'but still loads properly via CacheLoader';
 
 };
 
