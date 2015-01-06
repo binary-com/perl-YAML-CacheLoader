@@ -14,6 +14,20 @@ use Cache::RedisDB;
 use Path::Tiny;
 use YAML ();
 
+=head1 FUNCTIONS
+
+=head2 LoadFile
+
+my $structure = LoadFile('/path/to/yml'[, $force_reload]);
+
+Loads the structure from '/path/to/yml' into $structure, preferring the cached version if available,
+otherwise reading the file and caching the result for 593 seconds (about 10 minutes).
+
+If $force_reload is set to a true value, the file will be loaded from disk without regard
+to the current cache status.
+
+=cut
+
 sub LoadFile {
     my ($path, $force_reload) = @_;
 
@@ -32,6 +46,14 @@ sub LoadFile {
     return $structure;
 }
 
+=head2 DumpFile
+
+DumpFile('/path/to/yml', $structure);
+
+Dump the structure from $structure into '/path/to/yml', filling the cache along the way.
+
+=cut
+
 sub DumpFile {
     my ($path, $structure) = @_;
 
@@ -44,6 +66,14 @@ sub DumpFile {
 
     return $structure;
 }
+
+=head2 FlushCache
+
+FlushCache();
+
+Remove all currently cached YAML documents from the cache server.
+
+=cut
 
 sub FlushCache {
 
