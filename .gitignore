@@ -7,6 +7,7 @@
 *.lock
 *.appcache
 .build/
+YAML-CacheLoader*
 api/api_server.log
 cover_db
 .sass-cache
