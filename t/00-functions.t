@@ -20,7 +20,7 @@ my $test_structure = {
     akey => 'cache-loader',
     bkey => ['testing', 'is', 'good']};
 
-subtest 'DumpFile / LoadFile ' => sub {
+subtest 'DumpFile / LoadFile / FlushCache ' => sub {
 
     my $temp_file = Path::Tiny->tempfile('loaderXXXXXXX');
     my $contents  = $temp_file->slurp;
@@ -36,9 +36,12 @@ subtest 'DumpFile / LoadFile ' => sub {
     my $filename = $temp_file->canonpath;
     undef $temp_file;
     ok(not(-e $filename), $filename . ' no longer exists.');
-    throws_ok { $structure = YAML::LoadFile($filename) }  qr/Couldn't open/, ' which means YAML cannot open it';
+    throws_ok { $structure = YAML::LoadFile($filename) } qr/Couldn't open/, ' which means YAML cannot open it';
     lives_ok { $structure = LoadFile($filename) } 'but still loads properly via CacheLoader';
-
+    throws_ok { $structure = LoadFile($filename, 1) } qr/Couldn't open/, 'but not if we force a reload';
+    is(FlushCache(), 1, 'Flushing the cache removes our single entry');
+    throws_ok { $structure = LoadFile($filename) } qr/Couldn't open/, ' which means even loading via CacheLoader will not work';
+    is(FlushCache(), 0, ' and flushing the cache removes no current entries.');
 };
 
 $ENV{REDIS_CACHE_SERVER} = $prev_redis;
