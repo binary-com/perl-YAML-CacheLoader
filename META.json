@@ -34,6 +34,22 @@
             "Dist::Milla" : "v1.0.9",
             "Test::Pod" : "1.41"
          }
+      },
+      "runtime" : {
+         "requires" : {
+            "Cache::RedisDB" : "0",
+            "Path::Tiny" : "0",
+            "YAML" : "0"
+         }
+      },
+      "test" : {
+         "recommends" : {
+            "Test::RedisServer" : "0.14"
+         },
+         "requires" : {
+            "File::Temp" : "0.23",
+            "Test::Most" : "0.34"
+         }
       }
    },
    "release_status" : "stable",
