@@ -1,4 +1,4 @@
-requires 'Cache::RedisDB';
+requires 'Cache::RedisDB', '0.06';
 requires 'Path::Tiny';
 requires 'YAML';
 

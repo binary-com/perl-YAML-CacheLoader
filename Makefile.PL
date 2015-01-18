@@ -20,7 +20,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "YAML::CacheLoader",
   "PREREQ_PM" => {
-    "Cache::RedisDB" => 0,
+    "Cache::RedisDB" => "0.06",
     "Path::Tiny" => 0,
     "YAML" => 0
   },
@@ -28,7 +28,7 @@ my %WriteMakefileArgs = (
     "File::Temp" => "0.23",
     "Test::Most" => "0.34"
   },
-  "VERSION" => "0.010",
+  "VERSION" => "0.011",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -36,7 +36,7 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
-  "Cache::RedisDB" => 0,
+  "Cache::RedisDB" => "0.06",
   "ExtUtils::MakeMaker" => 0,
   "File::Temp" => "0.23",
   "Path::Tiny" => 0,
