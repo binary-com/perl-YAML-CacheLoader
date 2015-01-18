@@ -25,3 +25,10 @@
     FlushCache();
 
     Remove all currently cached YAML documents from the cache server.
+
+- FreshenCache
+
+    FreshenCache();
+
+    Freshen currently cached files which may be out of date, either by deleting the cache (for now deleted files) or reloading from the disk (for changed ones)
+    Returns a stats hash-ref.

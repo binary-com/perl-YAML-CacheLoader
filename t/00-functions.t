@@ -8,7 +8,7 @@ use Test::RedisServer;
 use Path::Tiny;
 
 use YAML;
-use YAML::CacheLoader qw( LoadFile DumpFile FlushCache );
+use YAML::CacheLoader qw( LoadFile DumpFile FlushCache FreshenCache );
 
 my $redis_server;
 eval { $redis_server = Test::RedisServer->new(conf => {port => 9966}) } or plan skip_all => 'redis-server is required to this test';
@@ -42,6 +42,30 @@ subtest 'DumpFile / LoadFile / FlushCache ' => sub {
     is(FlushCache(), 1, 'Flushing the cache removes our single entry');
     throws_ok { $structure = LoadFile($filename) } qr/Couldn't open/, ' which means even loading via CacheLoader will not work';
     is(FlushCache(), 0, ' and flushing the cache removes no current entries.');
+};
+
+subtest 'FreshenCache' => sub {
+    my $unchanged_file = Path::Tiny->tempfile('loaderXXXXXXX');
+    my $deleted_file   = Path::Tiny->tempfile('loaderXXXXXXX');
+    my $changed_file   = Path::Tiny->tempfile('loaderXXXXXXX');
+
+    DumpFile($unchanged_file, $test_structure);
+    $unchanged_file->touch(1);    # Very old file.
+
+    DumpFile($deleted_file, $test_structure);
+    undef $deleted_file;          # Poof!
+
+    DumpFile($changed_file, $test_structure);    # Hopefully we run fast enough that this file is  considered changed.
+    eq_or_diff(
+        FreshenCache(),
+        {
+            examined  => 3,
+            cleared   => 1,
+            freshened => 1
+        },
+        'Dealt with each file change correctly.'
+    );
+
 };
 
 $ENV{REDIS_CACHE_SERVER} = $prev_redis;

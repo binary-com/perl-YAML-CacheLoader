@@ -6,7 +6,7 @@ package YAML::CacheLoader;
 our $VERSION = '0.011';
 
 use base qw( Exporter );
-our @EXPORT_OK = qw( LoadFile DumpFile FlushCache );
+our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
 
 use constant CACHE_SECONDS   => 593;                   # Relatively nice prime number just under 10 minutes.
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
@@ -76,13 +76,48 @@ FlushCache();
 
 Remove all currently cached YAML documents from the cache server.
 
-=back
 =cut
 
 sub FlushCache {
     my @cached_files = _cached_files_list();
 
     return (@cached_files) ? Cache::RedisDB->del(CACHE_NAMESPACE, @cached_files) : 0;
+}
+
+=item FreshenCache
+
+FreshenCache();
+
+Freshen currently cached files which may be out of date, either by deleting the cache (for now deleted files) or reloading from the disk (for changed ones)
+Returns a stats hash-ref.
+
+=back
+=cut
+
+sub FreshenCache {
+    # A good rough cut is to see if something _might_ have changed in the meantime
+    my $cutoff = time - CACHE_SECONDS;
+
+    my @cached_files = map { path($_) } _cached_files_list();
+
+    my $stats = {
+        examined  => scalar @cached_files,
+        cleared   => 0,
+        freshened => 0,
+    };
+
+    foreach my $file (@cached_files) {
+        if (!$file->exists) {
+            $stats->{cleared}++ if (Cache::RedisDB->del(CACHE_NAMESPACE, $file->canonpath));    # Let's not cache things which don't exist.
+        } elsif ($file->stat->mtime > $cutoff) {
+            # Unfortunately, we cannot see if it has gotten recached in the meantime
+            # since Cache::RedisDB does not expose the PTTL command
+            # So we just recache now.
+            $stats->{freshened}++ if (LoadFile($file));
+        }
+    }
+
+    return $stats;
 }
 
 sub _cached_files_list {
