@@ -38,7 +38,7 @@
       "runtime" : {
          "requires" : {
             "Cache::RedisDB" : "0.06",
-            "Path::Tiny" : "0",
+            "Path::Tiny" : "0.061",
             "YAML" : "0"
          }
       },

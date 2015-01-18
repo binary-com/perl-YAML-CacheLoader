@@ -12,7 +12,7 @@ use constant CACHE_SECONDS   => 593;                   # Relatively nice prime n
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
 
 use Cache::RedisDB 0.06;
-use Path::Tiny;
+use Path::Tiny 0.061;
 use YAML ();
 
 =head1 FUNCTIONS

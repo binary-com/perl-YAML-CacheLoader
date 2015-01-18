@@ -21,7 +21,7 @@ my %WriteMakefileArgs = (
   "NAME" => "YAML::CacheLoader",
   "PREREQ_PM" => {
     "Cache::RedisDB" => "0.06",
-    "Path::Tiny" => 0,
+    "Path::Tiny" => "0.061",
     "YAML" => 0
   },
   "TEST_REQUIRES" => {
@@ -39,7 +39,7 @@ my %FallbackPrereqs = (
   "Cache::RedisDB" => "0.06",
   "ExtUtils::MakeMaker" => 0,
   "File::Temp" => "0.23",
-  "Path::Tiny" => 0,
+  "Path::Tiny" => "0.061",
   "Test::Most" => "0.34",
   "YAML" => 0
 );
