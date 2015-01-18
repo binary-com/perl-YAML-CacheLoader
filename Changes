@@ -1,8 +1,10 @@
 {{$NEXT}}
 
-- Improve POD style, perhaps.
-- Require Cache::RedisDB 0.06
-- Add FreshenCache which tries to get the cache in line with disk
+0.011  2015-01-18 16:27:42 CAT
+
+    - Improve POD style, perhaps.
+    - Require Cache::RedisDB 0.06
+    - Add FreshenCache which tries to get the cache in line with disk
 
 0.010  2015-01-07 11:31:04 EST
     - Move to Milla for distribution management
