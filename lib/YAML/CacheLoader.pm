@@ -17,7 +17,9 @@ use YAML ();
 
 =head1 FUNCTIONS
 
-=head2 LoadFile
+=over
+
+=item LoadFile
 
 my $structure = LoadFile('/path/to/yml'[, $force_reload]);
 
@@ -47,7 +49,7 @@ sub LoadFile {
     return $structure;
 }
 
-=head2 DumpFile
+=item DumpFile
 
 DumpFile('/path/to/yml', $structure);
 
@@ -68,12 +70,13 @@ sub DumpFile {
     return $structure;
 }
 
-=head2 FlushCache
+=item FlushCache
 
 FlushCache();
 
 Remove all currently cached YAML documents from the cache server.
 
+=back
 =cut
 
 sub FlushCache {

@@ -4,24 +4,24 @@
 
 # FUNCTIONS
 
-## LoadFile
+- LoadFile
 
-my $structure = LoadFile('/path/to/yml'\[, $force\_reload\]);
+    my $structure = LoadFile('/path/to/yml'\[, $force\_reload\]);
 
-Loads the structure from '/path/to/yml' into $structure, preferring the cached version if available,
-otherwise reading the file and caching the result for 593 seconds (about 10 minutes).
+    Loads the structure from '/path/to/yml' into $structure, preferring the cached version if available,
+    otherwise reading the file and caching the result for 593 seconds (about 10 minutes).
 
-If $force\_reload is set to a true value, the file will be loaded from disk without regard
-to the current cache status.
+    If $force\_reload is set to a true value, the file will be loaded from disk without regard
+    to the current cache status.
 
-## DumpFile
+- DumpFile
 
-DumpFile('/path/to/yml', $structure);
+    DumpFile('/path/to/yml', $structure);
 
-Dump the structure from $structure into '/path/to/yml', filling the cache along the way.
+    Dump the structure from $structure into '/path/to/yml', filling the cache along the way.
 
-## FlushCache
+- FlushCache
 
-FlushCache();
+    FlushCache();
 
-Remove all currently cached YAML documents from the cache server.
+    Remove all currently cached YAML documents from the cache server.
