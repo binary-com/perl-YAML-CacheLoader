@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.012  2015-01-20 12:11:12 CAT
+
     - Require Cache::RedisDB 0.07
     - Improve FreshenCache with new 'ttl' command from Cache.
 
