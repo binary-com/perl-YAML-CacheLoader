@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+    - Require Cache::RedisDB 0.07
+    - Improve FreshenCache with new 'ttl' command from Cache.
+
 0.011  2015-01-18 16:27:42 CAT
 
     - Improve POD style, perhaps.

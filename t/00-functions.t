@@ -55,15 +55,38 @@ subtest 'FreshenCache' => sub {
     DumpFile($deleted_file, $test_structure);
     undef $deleted_file;          # Poof!
 
-    DumpFile($changed_file, $test_structure);    # Hopefully we run fast enough that this file is  considered changed.
+    DumpFile($changed_file, $test_structure);
     eq_or_diff(
         FreshenCache(),
         {
             examined  => 3,
             cleared   => 1,
-            freshened => 1
+            freshened => 1, # We don't have the precision to know which part of the second.
         },
         'Dealt with each file change correctly.'
+    );
+    note "Need to update the file and sleep for a moment.";
+    $changed_file->touch;
+    sleep 1;
+    eq_or_diff(
+        FreshenCache(),
+        {
+            examined  => 2,    # Deleted file is gone.
+            cleared   => 0,
+            freshened => 1,    # Freshened the touched file.
+        },
+        'Second run refreshes the "changed" file.'
+    );
+    note "Need to just sleep for a moment.";
+    sleep 1;
+    eq_or_diff(
+        FreshenCache(),
+        {
+            examined  => 2,
+            cleared   => 0,
+            freshened => 0,    # File is unchanged since we last looked.
+        },
+        'Third run does not refreshen the "changed" file.'
     );
 
 };

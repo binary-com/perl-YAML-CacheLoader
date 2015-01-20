@@ -3,7 +3,7 @@ use warnings;
 
 # ABSTRACT: load YAML from cache or disk, whichever seems better
 package YAML::CacheLoader;
-our $VERSION = '0.011';
+our $VERSION = '0.012';
 
 use base qw( Exporter );
 our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
@@ -11,7 +11,7 @@ our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
 use constant CACHE_SECONDS   => 593;                   # Relatively nice prime number just under 10 minutes.
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
 
-use Cache::RedisDB 0.06;
+use Cache::RedisDB 0.07;
 use Path::Tiny 0.061;
 use YAML ();
 
@@ -109,11 +109,12 @@ sub FreshenCache {
     foreach my $file (@cached_files) {
         if (!$file->exists) {
             $stats->{cleared}++ if (Cache::RedisDB->del(CACHE_NAMESPACE, $file->canonpath));    # Let's not cache things which don't exist.
-        } elsif ($file->stat->mtime > $cutoff) {
-            # Unfortunately, we cannot see if it has gotten recached in the meantime
-            # since Cache::RedisDB does not expose the PTTL command
-            # So we just recache now.
-            $stats->{freshened}++ if (LoadFile($file));
+        } elsif ((my $mtime = $file->stat->mtime) > $cutoff
+            && (my $reloaded_ago = CACHE_SECONDS - Cache::RedisDB->ttl(CACHE_NAMESPACE, $file->canonpath)))
+        {
+            # Now see if we might have reloaded the cache in the meantime.
+            my $reloaded = time - $reloaded_ago;
+            $stats->{freshened}++ if ($reloaded < $mtime && LoadFile($file, 1));
         }
     }
 
