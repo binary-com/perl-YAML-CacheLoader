@@ -1,6 +1,7 @@
 {{$NEXT}}
 
     - Allow file list to FreshenCache
+    - Use FreshenCache in the general LoadFile flow
 
 0.012  2015-01-20 12:11:12 CAT
 

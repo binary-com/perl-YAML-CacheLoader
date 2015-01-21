@@ -35,16 +35,22 @@ sub LoadFile {
     my ($path, $force_reload) = @_;
 
     my $file_loc = path($path)->canonpath;    # realpath would be more accurate, but slower.
-
-    if (not $force_reload) {
-        my $from_cache = Cache::RedisDB->get(CACHE_NAMESPACE, $file_loc);
-        return $from_cache if $from_cache;    # Happy path
+    my $structure;
+    if ($force_reload) {
+        $structure = _load_and_cache($file_loc);
+    } else {
+        FreshenCache($file_loc);
+        $structure = Cache::RedisDB->get(CACHE_NAMESPACE, $file_loc) // _load_and_cache($file_loc);
     }
 
-    # Looks like we'll need to actually do some work, then.
-    my $structure = YAML::LoadFile($file_loc);    # Let this fail in whatever ways it might.
+    return $structure;
+}
 
-    Cache::RedisDB->set(CACHE_NAMESPACE, $file_loc, $structure, CACHE_SECONDS) if ($structure);
+sub _load_and_cache {
+    my $loc = shift;
+
+    my $structure = YAML::LoadFile($loc);    # Let this fail in whatever ways it might.
+    Cache::RedisDB->set(CACHE_NAMESPACE, $loc, $structure, CACHE_SECONDS) if ($structure);
 
     return $structure;
 }

@@ -16,16 +16,20 @@ eval { $redis_server = Test::RedisServer->new(conf => {port => 9966}) } or plan 
 my $prev_redis = $ENV{REDIS_CACHE_SERVER};
 $ENV{REDIS_CACHE_SERVER} = $redis_server->connect_info;
 
+my $temp_late = 'loaderXXXXXXX';
+
 my $test_structure = {
     akey => 'cache-loader',
     bkey => ['testing', 'is', 'good']};
 
 subtest 'DumpFile / LoadFile / FlushCache ' => sub {
 
-    my $temp_file = Path::Tiny->tempfile('loaderXXXXXXX');
-    my $contents  = $temp_file->slurp;
+    my $temp_file   = Path::Tiny->tempfile($temp_late);
+    my $nother_temp = Path::Tiny->tempfile($temp_late);
+    my $contents    = $temp_file->slurp;
     is(length $contents, 0, $temp_file . ' starts out empty');
-    DumpFile($temp_file, $test_structure);
+    DumpFile($temp_file,   $test_structure);
+    DumpFile($nother_temp, $test_structure);
     $contents = $temp_file->slurp;
     isnt(length $contents, 0, $temp_file . ' now contains some stuff');
     my $structure;
@@ -37,17 +41,15 @@ subtest 'DumpFile / LoadFile / FlushCache ' => sub {
     undef $temp_file;
     ok(not(-e $filename), $filename . ' no longer exists.');
     throws_ok { $structure = YAML::LoadFile($filename) } qr/Couldn't open/, ' which means YAML cannot open it';
-    lives_ok { $structure = LoadFile($filename) } 'but still loads properly via CacheLoader';
-    throws_ok { $structure = LoadFile($filename, 1) } qr/Couldn't open/, 'but not if we force a reload';
-    is(FlushCache(), 1, 'Flushing the cache removes our single entry');
-    throws_ok { $structure = LoadFile($filename) } qr/Couldn't open/, ' which means even loading via CacheLoader will not work';
+    throws_ok { $structure = LoadFile($filename) } qr/Couldn't open/,       ' implying CacheLoader cannot either';
+    is(FlushCache(), 1, 'Flushing the cache removes our single remaining entry');
     is(FlushCache(), 0, ' and flushing the cache removes no current entries.');
 };
 
 subtest 'FreshenCache' => sub {
-    my $unchanged_file = Path::Tiny->tempfile('loaderXXXXXXX');
-    my $deleted_file   = Path::Tiny->tempfile('loaderXXXXXXX');
-    my $changed_file   = Path::Tiny->tempfile('loaderXXXXXXX');
+    my $unchanged_file = Path::Tiny->tempfile($temp_late);
+    my $deleted_file   = Path::Tiny->tempfile($temp_late);
+    my $changed_file   = Path::Tiny->tempfile($temp_late);
 
     DumpFile($unchanged_file, $test_structure);
     $unchanged_file->touch(1);    # Very old file.
