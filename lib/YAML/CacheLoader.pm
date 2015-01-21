@@ -3,7 +3,7 @@ use warnings;
 
 # ABSTRACT: load YAML from cache or disk, whichever seems better
 package YAML::CacheLoader;
-our $VERSION = '0.012';
+our $VERSION = '0.013';
 
 use base qw( Exporter );
 our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
@@ -89,32 +89,36 @@ sub FlushCache {
 FreshenCache();
 
 Freshen currently cached files which may be out of date, either by deleting the cache (for now deleted files) or reloading from the disk (for changed ones)
+
+May optionally provide a list of files to check, otherwise all known cached files are checked.
+
 Returns a stats hash-ref.
 
 =back
 =cut
 
 sub FreshenCache {
+    my (@file_list) = @_;
+
+    @file_list = _cached_files_list() unless @file_list;    # By default check all currently cached.
+
+    my @to_check = map { path($_) } @file_list;
     # A good rough cut is to see if something _might_ have changed in the meantime
     my $cutoff = time - CACHE_SECONDS;
 
-    my @cached_files = map { path($_) } _cached_files_list();
-
     my $stats = {
-        examined  => scalar @cached_files,
+        examined  => scalar @to_check,
         cleared   => 0,
         freshened => 0,
     };
 
-    foreach my $file (@cached_files) {
+    foreach my $file (@to_check) {
         if (!$file->exists) {
             $stats->{cleared}++ if (Cache::RedisDB->del(CACHE_NAMESPACE, $file->canonpath));    # Let's not cache things which don't exist.
         } elsif ((my $mtime = $file->stat->mtime) > $cutoff
             && (my $reloaded_ago = CACHE_SECONDS - Cache::RedisDB->ttl(CACHE_NAMESPACE, $file->canonpath)))
         {
-            # Now see if we might have reloaded the cache in the meantime.
-            my $reloaded = time - $reloaded_ago;
-            $stats->{freshened}++ if ($reloaded < $mtime && LoadFile($file, 1));
+            $stats->{freshened}++ if (time - $reloaded_ago < $mtime && LoadFile($file, 1));
         }
     }
 

@@ -31,4 +31,7 @@
     FreshenCache();
 
     Freshen currently cached files which may be out of date, either by deleting the cache (for now deleted files) or reloading from the disk (for changed ones)
+
+    May optionally provide a list of files to check, otherwise all known cached files are checked.
+
     Returns a stats hash-ref.

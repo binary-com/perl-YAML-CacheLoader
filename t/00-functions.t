@@ -57,11 +57,29 @@ subtest 'FreshenCache' => sub {
 
     DumpFile($changed_file, $test_structure);
     eq_or_diff(
+        FreshenCache($unchanged_file),
+        {
+            examined  => 1,
+            cleared   => 0,
+            freshened => 0
+        },
+        'Proper results for a single unchanged file argument'
+    );
+    eq_or_diff(
+        FreshenCache('fakeymcfakerson', $unchanged_file),
+        {
+            examined  => 2,
+            cleared   => 0,
+            freshened => 0
+        },
+        'Proper results for a fake plus an unchanged file argument'
+    );
+    eq_or_diff(
         FreshenCache(),
         {
             examined  => 3,
             cleared   => 1,
-            freshened => 1, # We don't have the precision to know which part of the second.
+            freshened => 1,    # We don't have the precision to know which part of the second.
         },
         'Dealt with each file change correctly.'
     );
