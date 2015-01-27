@@ -3,15 +3,13 @@ use strict;
 use warnings;
 
 use Test::Most;
-use Test::RedisServer;
 
 use Path::Tiny;
-
 use YAML;
 use YAML::CacheLoader qw( LoadFile DumpFile FlushCache FreshenCache );
 
 my $redis_server;
-eval { $redis_server = Test::RedisServer->new(conf => {port => 9966}) } or plan skip_all => 'redis-server is required to this test';
+eval { require Test::RedisServer; $redis_server = Test::RedisServer->new(conf => {port => 9966}) } or plan skip_all => 'Test::RedisServer is required for this test';
 
 my $prev_redis = $ENV{REDIS_CACHE_SERVER};
 $ENV{REDIS_CACHE_SERVER} = $redis_server->connect_info;
