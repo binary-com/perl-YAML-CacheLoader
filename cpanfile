@@ -1,6 +1,6 @@
 requires 'Cache::RedisDB', '0.07';
 requires 'Path::Tiny', '0.061';
-requires 'YAML';
+requires 'YAML::XS', '0.59';
 
 on test => sub {
     requires 'Test::Most', '0.34';

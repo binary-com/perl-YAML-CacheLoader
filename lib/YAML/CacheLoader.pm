@@ -3,7 +3,7 @@ use warnings;
 
 # ABSTRACT: load YAML from cache or disk, whichever seems better
 package YAML::CacheLoader;
-our $VERSION = '0.014';
+our $VERSION = '0.015';
 
 use base qw( Exporter );
 our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
@@ -13,7 +13,7 @@ use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied 
 
 use Cache::RedisDB 0.07;
 use Path::Tiny 0.061;
-use YAML ();
+use YAML::XS 0.59;
 
 =head1 FUNCTIONS
 

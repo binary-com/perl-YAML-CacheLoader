@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+    - Switch to less generic YAML::XS
+
 0.014  2015-01-27 07:57:43 CAT
 
     - Fix Test::RedisServer dependency loading issue.

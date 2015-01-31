@@ -22,13 +22,13 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Cache::RedisDB" => "0.07",
     "Path::Tiny" => "0.061",
-    "YAML" => 0
+    "YAML::XS" => "0.59"
   },
   "TEST_REQUIRES" => {
     "File::Temp" => "0.23",
     "Test::Most" => "0.34"
   },
-  "VERSION" => "0.014",
+  "VERSION" => "0.015",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -41,7 +41,7 @@ my %FallbackPrereqs = (
   "File::Temp" => "0.23",
   "Path::Tiny" => "0.061",
   "Test::Most" => "0.34",
-  "YAML" => 0
+  "YAML::XS" => "0.59"
 );
 
 
