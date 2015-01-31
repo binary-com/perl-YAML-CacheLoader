@@ -5,7 +5,7 @@ use warnings;
 use Test::Most;
 
 use Path::Tiny;
-use YAML;
+use YAML::XS;
 use YAML::CacheLoader qw( LoadFile DumpFile FlushCache FreshenCache );
 
 my $redis_server;
@@ -31,15 +31,15 @@ subtest 'DumpFile / LoadFile / FlushCache ' => sub {
     $contents = $temp_file->slurp;
     isnt(length $contents, 0, $temp_file . ' now contains some stuff');
     my $structure;
-    lives_ok { $structure = YAML::Load($contents) } ' which loads as YAML';
+    lives_ok { $structure = YAML::XS::Load($contents) } ' which loads as YAML';
     eq_or_diff($structure, $test_structure, ' and parses just as expected');
     lives_ok { $structure = LoadFile($temp_file) } $temp_file . ' loads properly via CacheLoader';
     eq_or_diff($structure, $test_structure, ' and parses just as expected');
     my $filename = $temp_file->canonpath;
     undef $temp_file;
     ok(not(-e $filename), $filename . ' no longer exists.');
-    throws_ok { $structure = YAML::LoadFile($filename) } qr/Couldn't open/, ' which means YAML cannot open it';
-    throws_ok { $structure = LoadFile($filename) } qr/Couldn't open/,       ' implying CacheLoader cannot either';
+    throws_ok { $structure = YAML::XS::LoadFile($filename) } qr/Can't open/, ' which means YAML cannot open it';
+    throws_ok { $structure = LoadFile($filename) } qr/Can't open/,       ' implying CacheLoader cannot either';
     is(FlushCache(), 1, 'Flushing the cache removes our single remaining entry');
     is(FlushCache(), 0, ' and flushing the cache removes no current entries.');
 };

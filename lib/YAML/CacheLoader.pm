@@ -3,7 +3,7 @@ use warnings;
 
 # ABSTRACT: load YAML from cache or disk, whichever seems better
 package YAML::CacheLoader;
-our $VERSION = '0.015';
+our $VERSION = '0.016';
 
 use base qw( Exporter );
 our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
@@ -49,7 +49,7 @@ sub LoadFile {
 sub _load_and_cache {
     my $loc = shift;
 
-    my $structure = YAML::LoadFile($loc);    # Let this fail in whatever ways it might.
+    my $structure = YAML::XS::LoadFile($loc);    # Let this fail in whatever ways it might.
     Cache::RedisDB->set(CACHE_NAMESPACE, $loc, $structure, CACHE_SECONDS) if ($structure);
 
     return $structure;
@@ -69,7 +69,7 @@ sub DumpFile {
     my $file_loc = path($path)->canonpath;    # realpath would be more accurate, but slower.
 
     if ($structure) {
-        YAML::DumpFile($file_loc, $structure);
+        YAML::XS::DumpFile($file_loc, $structure);
         Cache::RedisDB->set(CACHE_NAMESPACE, $file_loc, $structure, CACHE_SECONDS);
     }
 
