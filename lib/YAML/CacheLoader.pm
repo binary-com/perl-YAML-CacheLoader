@@ -3,12 +3,12 @@ use warnings;
 
 # ABSTRACT: load YAML from cache or disk, whichever seems better
 package YAML::CacheLoader;
-our $VERSION = '0.016';
+our $VERSION = '0.017';
 
 use base qw( Exporter );
 our @EXPORT_OK = qw( LoadFile DumpFile FlushCache FreshenCache);
 
-use constant CACHE_SECONDS   => 593;                   # Relatively nice prime number just under 10 minutes.
+use constant CACHE_SECONDS   => 3607;                  # Relatively nice prime number just over 1 hour.
 use constant CACHE_NAMESPACE => 'YAML-CACHELOADER';    # Make clear who dirtied up the memory
 
 use Cache::RedisDB 0.07;
