@@ -64,7 +64,7 @@
          "web" : "https://github.com/binary-com/perl-YAML-CacheLoader"
       }
    },
-   "version" : "0.016",
+   "version" : "0.017",
    "x_contributors" : [
       "Jean-Yves Sireau <jy@binary.com>",
       "Matt Miller <matt@binary.com>"
