@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.018  2015-07-02 15:37:58 CAT
+    - Remove FreshenCache from the general LoadFile flow
+
 0.017  2015-03-02 11:55:51 MYT
     - Expand caching time to just over one hour from just under ten minutes
 
