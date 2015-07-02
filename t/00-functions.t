@@ -9,7 +9,8 @@ use YAML::XS;
 use YAML::CacheLoader qw( LoadFile DumpFile FlushCache FreshenCache );
 
 my $redis_server;
-eval { require Test::RedisServer; $redis_server = Test::RedisServer->new(conf => {port => 9966}) } or plan skip_all => 'Test::RedisServer is required for this test';
+eval { require Test::RedisServer; $redis_server = Test::RedisServer->new(conf => {port => 9966}) }
+    or plan skip_all => 'Test::RedisServer is required for this test';
 
 my $prev_redis = $ENV{REDIS_CACHE_SERVER};
 $ENV{REDIS_CACHE_SERVER} = $redis_server->connect_info;
@@ -39,7 +40,8 @@ subtest 'DumpFile / LoadFile / FlushCache ' => sub {
     undef $temp_file;
     ok(not(-e $filename), $filename . ' no longer exists.');
     throws_ok { $structure = YAML::XS::LoadFile($filename) } qr/Can't open/, ' which means YAML cannot open it';
-    throws_ok { $structure = LoadFile($filename) } qr/Can't open/,       ' implying CacheLoader cannot either';
+    lives_ok { FreshenCache($filename); } 'So once we freshen our cache';
+    throws_ok { $structure = LoadFile($filename) } qr/Can't open/, ' CacheLoader cannot either';
     is(FlushCache(), 1, 'Flushing the cache removes our single remaining entry');
     is(FlushCache(), 0, ' and flushing the cache removes no current entries.');
 };

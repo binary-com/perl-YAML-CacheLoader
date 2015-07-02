@@ -39,7 +39,6 @@ sub LoadFile {
     if ($force_reload) {
         $structure = _load_and_cache($file_loc);
     } else {
-        FreshenCache($file_loc);
         $structure = Cache::RedisDB->get(CACHE_NAMESPACE, $file_loc) // _load_and_cache($file_loc);
     }
 
