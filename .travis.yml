@@ -17,5 +17,7 @@ before_install:
     - source ~/travis-perl-helpers/init
     - build-perl
     - perl -V
+    - "cpanm -qn Test::Requires::Git"
+    - "cpanm -qn Devel::Cover::Report::Codecov"
 script:
-    perl Makefile.PL && make test
+    perl Makefile.PL && cover -test -report codecov
