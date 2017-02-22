@@ -1,8 +1,8 @@
+# ABSTRACT: load YAML from cache or disk, whichever seems better
+package YAML::CacheLoader;
 use strict;
 use warnings;
 
-# ABSTRACT: load YAML from cache or disk, whichever seems better
-package YAML::CacheLoader;
 our $VERSION = '0.018';
 
 use base qw( Exporter );
