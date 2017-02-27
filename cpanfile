@@ -11,7 +11,7 @@ on build => sub {
 };
 
 on test => sub {
-    requires 'File::Temp', '0.23';
+    requires 'File::Temp', '0.22';
     requires 'Test::Most', '0.34';
     recommends 'Test::RedisServer', '0.14';
 };
